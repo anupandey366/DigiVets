@@ -1,18 +1,18 @@
-import React, { useEffect } from 'react';
-import { StatusBar, StyleSheet, View, Text } from 'react-native';
+import React, { useEffect, useState  } from 'react';
+import { StatusBar, StyleSheet, View, Text, ActivityIndicator } from 'react-native';
 import SplashScreen from 'react-native-splash-screen';
+import AppNavigator from './src/navigations/StackNavigator';
 
 const App = () => {
   useEffect(() => {
-    // Hide splash screen after app has loaded
-    SplashScreen.hide();
+    SplashScreen.hide(); // Hide native splash when JS is ready
   }, []);
 
   return (
-    <View style={styles.container}>
+    <>
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.text}>Welcome to My App</Text>
-    </View>
+      <AppNavigator />
+    </>
   );
 };
 
