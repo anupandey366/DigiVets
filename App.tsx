@@ -1,27 +1,31 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useEffect } from 'react';
+import { StatusBar, StyleSheet, View, Text } from 'react-native';
+import SplashScreen from 'react-native-splash-screen';
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-
-function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  useEffect(() => {
+    // Hide splash screen after app has loaded
+    SplashScreen.hide();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NewAppScreen templateFileName="App.tsx" />
+      <StatusBar barStyle="dark-content" />
+      <Text style={styles.text}>Welcome to My App</Text>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff', // Match your splash background color
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
 });
 
