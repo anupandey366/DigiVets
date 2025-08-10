@@ -4,9 +4,9 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 const RoleSelectionScreen = ({ navigation }: any) => {
   const handleRoleSelect = (role: string) => {
     if (role === 'Doctor') {
-      navigation.navigate('DoctorHome'); // Replace with your actual screen
+      navigation.navigate('Login', { role }); 
     } else {
-      navigation.navigate('PetParentHome'); // Replace with your actual screen
+      navigation.navigate('Login'); 
     }
   };
 
