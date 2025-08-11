@@ -6,7 +6,7 @@ const RoleSelectionScreen = ({ navigation }: any) => {
     if (role === 'Doctor') {
       navigation.navigate('Login', { role }); 
     } else {
-      navigation.navigate('Login'); 
+      navigation.navigate('Login', { role }); 
     }
   };
 
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#ffb433',
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 40,

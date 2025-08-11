@@ -3,8 +3,9 @@ import { View, Text,  TextInput, TouchableOpacity, StyleSheet, Image } from 'rea
 import CountryPicker from 'react-native-country-picker-modal';
 import { CountryCode } from 'react-native-country-picker-modal';
 import Icon from 'react-native-vector-icons/Feather';
+import CheckBox from '@react-native-community/checkbox';
 
-const LoginScreen = ({ navigation }: any) => {
+const LoginScreen = ({ navigation, route }: any) => {
     const handleRoleSelect = (role: string) => {
     navigation.navigate('', { role }); 
   };
@@ -13,6 +14,10 @@ const LoginScreen = ({ navigation }: any) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
+  const [isSelected, setSelection] = useState(false);
+  const [isSelectedTerms, setSelectionTerms] = useState(false);
+  
+  const { role } = route.params || {};
 
   return (
     <View style={styles.container}>
@@ -22,7 +27,8 @@ const LoginScreen = ({ navigation }: any) => {
 
       <Image source={require('../assests/logo.png')} style={styles.logo} />
 
-      <Text style={styles.title}>Login as Pet Parent</Text>
+      {/* <Text style={styles.title}>Login as Pet Parent</Text> */}
+      <Text style={styles.title}>{role ? `Login as ${role}` : 'Login'}</Text>
 
       <Text style={styles.title}>Access doctors and manage your pet's health online.</Text>
 
@@ -39,7 +45,6 @@ const LoginScreen = ({ navigation }: any) => {
             setCallingCode(country.callingCode[0]);
           }}
         />
-        <Text style={styles.callingCode}>+{callingCode}</Text>
         <TextInput
           style={styles.input}
           placeholder="Enter mobile number"
@@ -50,30 +55,65 @@ const LoginScreen = ({ navigation }: any) => {
       </View>
 
       {/* Password */}
-      <Text style={styles.label}>Password</Text>
-      <View style={styles.inputRow}>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter Password"
-          secureTextEntry={!passwordVisible}
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity
-          onPress={() => setPasswordVisible(!passwordVisible)}
-          style={styles.iconButton}
-        >
-          <Icon
-            name={passwordVisible ? 'eye-off' : 'eye'}
-            size={20}
-            color="#000"
+      {/* Show password fields only when checkbox is NOT selected */}
+      {!isSelected && (
+        <>
+          <Text style={styles.label}>Password</Text>
+          <View style={styles.inputRow}>
+            <TextInput
+              style={styles.input}
+              placeholder="Enter Password"
+              secureTextEntry={!passwordVisible}
+              value={password}
+              onChangeText={setPassword}
+            />
+            <TouchableOpacity
+              onPress={() => setPasswordVisible(!passwordVisible)}
+              style={styles.iconButton}
+            >
+              <Icon
+                name={passwordVisible ? 'eye-off' : 'eye'}
+                size={20}
+                color="#000"
+              />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
+      <View style={styles.row}>
+        {/* Left: Checkbox with label */}
+        <View style={styles.left}>
+          <CheckBox
+            value={isSelected}
+            onValueChange={setSelection}
           />
+          <Text style={styles.label}>Login using OTP</Text>
+        </View>
+
+        {/* Right: Forgot Password link */}
+        <TouchableOpacity>
+          <Text style={styles.link}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
-
+      
       <TouchableOpacity style={styles.button} onPress={() => handleRoleSelect('Doctor')}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+
+      <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
+        <Text>Don’t have an account? </Text>
+        <TouchableOpacity onPress={() => console.log('Register clicked')}>
+          <Text style={{ color: '#2b7fff', fontWeight: 'bold' }}>Register</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.left}>
+          <CheckBox
+            value={isSelectedTerms}
+            onValueChange={setSelectionTerms}
+          />
+          <Text style={styles.label}>By logging in, you agree with our Terms & Conditions, Privacy & Cookie Policy.</Text>
+        </View>
     </View>
   );
 };
@@ -87,6 +127,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center', 
+    alignSelf: 'stretch',
+    marginTop: 10
+  },
+  left: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'stretch',
+  },
+  link: {
+    fontSize: 14,
+    color: '#2b7fff',
+    textDecorationLine: 'underline', 
   },
   backButton: {
     position: 'absolute',
@@ -121,13 +178,13 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#ffb433',
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 40,
-    marginVertical: 10,
-    width: '80%',
+    marginVertical: 20,
     alignItems: 'center',
+    alignSelf: 'stretch',
   },
   inputRow: {
     flexDirection: 'row',
@@ -138,9 +195,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     marginBottom: 10,
   },
-  label: { fontSize: 14, marginVertical: 8 },
+  label: { fontSize: 14, marginVertical: 8, textAlign: 'left', alignSelf: 'stretch', },
   callingCode: { marginRight: 5, fontSize: 16 },
   input: { flex: 1, height: 40 },
   iconButton: { padding: 5 },
-  buttonText: { color: '#fff', fontSize: 16, textAlign: 'center' },
+  buttonText: { color: '#fff', fontSize: 16, textAlign: 'center',alignSelf: 'stretch', 
+    paddingHorizontal: 8, },
 });
