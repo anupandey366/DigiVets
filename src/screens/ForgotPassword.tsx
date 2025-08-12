@@ -5,7 +5,7 @@ import { CountryCode } from 'react-native-country-picker-modal';
 import Icon from 'react-native-vector-icons/Feather';
 import CheckBox from '@react-native-community/checkbox';
 
-const RegisterScreen = ({ navigation, route }: any) => {
+const ForgotPasswordScreen = ({ navigation, route }: any) => {
     const handleRoleSelect = (role: string) => {
     navigation.navigate('', { role }); 
   };
@@ -27,10 +27,10 @@ const RegisterScreen = ({ navigation, route }: any) => {
 
       <Image source={require('../assests/logo.png')} style={styles.logo} />
 
-      {/* <Text style={styles.title}>Login as Pet Parent</Text> */}
-      <Text style={styles.title}>{role ? `Register as ${role}` : 'Register'}</Text>
+      <Text style={styles.title}>Forgot Password?</Text>
+      {/* <Text style={styles.title}>{role ? `Register as ${role}` : 'Register'}</Text> */}
 
-      <Text style={styles.title}>Join DigiVet as a Pet Parent and connect with veterinary doctors online.</Text>
+      <Text style={styles.title}>Enter your registered mobile number and we’ll send you an OTP to reset your password.</Text>
 
       {/* Mobile Number */}
       <Text style={styles.label}>Mobile Number</Text>
@@ -53,44 +53,10 @@ const RegisterScreen = ({ navigation, route }: any) => {
           onChangeText={setMobile}
         />
       </View>
-
-      {/* Password */}
-      {/* Show password fields only when checkbox is NOT selected */}
-      {!isSelected && (
-        <>
-          <Text style={styles.label}>Password</Text>
-          <View style={styles.inputRow}>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Password"
-              secureTextEntry={!passwordVisible}
-              value={password}
-              onChangeText={setPassword}
-            />
-            <TouchableOpacity
-              onPress={() => setPasswordVisible(!passwordVisible)}
-              style={styles.iconButton}
-            >
-              <Icon
-                name={passwordVisible ? 'eye-off' : 'eye'}
-                size={20}
-                color="#000"
-              />
-            </TouchableOpacity>
-          </View>
-        </>
-      )}
       
       <TouchableOpacity style={styles.button} onPress={() => handleRoleSelect('Doctor')}>
-        <Text style={styles.buttonText}>Register</Text>
+        <Text style={styles.buttonText}>Send OTP</Text>
       </TouchableOpacity>
-
-      <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
-        <Text>Already have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-          <Text style={{ color: '#2b7fff', fontWeight: 'bold' }}>Login</Text>
-        </TouchableOpacity>
-      </View>
 
       <View style={styles.left}>
           <CheckBox
@@ -103,7 +69,7 @@ const RegisterScreen = ({ navigation, route }: any) => {
   );
 };
 
-export default RegisterScreen;
+export default ForgotPasswordScreen;
 
 const styles = StyleSheet.create({
   container: {

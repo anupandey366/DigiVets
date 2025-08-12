@@ -91,7 +91,7 @@ const LoginScreen = ({ navigation, route }: any) => {
         </View>
 
         {/* Right: Forgot Password link */}
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword', { role })}>
           <Text style={styles.link}>Forgot Password?</Text>
         </TouchableOpacity>
       </View>
@@ -102,7 +102,7 @@ const LoginScreen = ({ navigation, route }: any) => {
 
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
         <Text>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => console.log('Register clicked')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Register', { role })}>
           <Text style={{ color: '#2b7fff', fontWeight: 'bold' }}>Register</Text>
         </TouchableOpacity>
       </View>
