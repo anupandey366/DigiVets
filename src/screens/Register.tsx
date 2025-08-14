@@ -1,23 +1,43 @@
 import React, { useState } from 'react';
-import { View, Text,  TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text,  TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
 import { CountryCode } from 'react-native-country-picker-modal';
 import Icon from 'react-native-vector-icons/Feather';
 import CheckBox from '@react-native-community/checkbox';
 
 const RegisterScreen = ({ navigation, route }: any) => {
-    const handleRoleSelect = (role: string) => {
-    navigation.navigate('', { role }); 
-  };
-  const [countryCode, setCountryCode] = useState<CountryCode>("IN");
+  const [countryCode, setCountryCode] = useState<CountryCode>('IN');
   const [callingCode, setCallingCode] = useState('91');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
-  const [isSelected, setSelection] = useState(false);
-  const [isSelectedTerms, setSelectionTerms] = useState(false);
+  const [isSelected, setSelection] = useState(false); // Login using OTP
+  const [isSelectedTerms, setSelectionTerms] = useState(false); // Terms checkbox
   
   const { role } = route.params || {};
+
+  const handleRegister = () => {
+    // Mobile validation
+    if (!mobile || mobile.length < 10) {
+      Alert.alert('Invalid Mobile Number', 'Please enter a valid mobile number.');
+      return;
+    }
+
+    // Password validation if OTP is NOT selected
+    if (!isSelected && (!password || password.length < 8)) {
+      Alert.alert('Invalid Password', 'Password must be at least 8 characters long.');
+      return;
+    }
+
+    // Terms & Conditions validation
+    if (!isSelectedTerms) {
+      Alert.alert('Terms & Conditions', 'You must agree to the terms and conditions.');
+      return;
+    }
+
+    // If all validations pass
+    navigation.navigate('Otp', { role, from: 'RegisterToOtp' });
+  };
 
   return (
     <View style={styles.container}>
@@ -27,7 +47,6 @@ const RegisterScreen = ({ navigation, route }: any) => {
 
       <Image source={require('../assests/logo.png')} style={styles.logo} />
 
-      {/* <Text style={styles.title}>Login as Pet Parent</Text> */}
       <Text style={styles.title}>{role ? `Register as ${role}` : 'Register'}</Text>
 
       <Text style={styles.title}>Join DigiVet as a Pet Parent and connect with veterinary doctors online.</Text>
@@ -49,13 +68,16 @@ const RegisterScreen = ({ navigation, route }: any) => {
           style={styles.input}
           placeholder="Enter mobile number"
           keyboardType="phone-pad"
+          maxLength={15}
           value={mobile}
-          onChangeText={setMobile}
+          onChangeText={(text) => {
+            const numericText = text.replace(/[^0-9]/g, '');
+            setMobile(numericText);
+          }}
         />
       </View>
 
       {/* Password */}
-      {/* Show password fields only when checkbox is NOT selected */}
       {!isSelected && (
         <>
           <Text style={styles.label}>Password</Text>
@@ -80,11 +102,13 @@ const RegisterScreen = ({ navigation, route }: any) => {
           </View>
         </>
       )}
-      
-      <TouchableOpacity style={styles.button} onPress={() => handleRoleSelect('Doctor')}>
+
+      {/* Register Button */}
+      <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
 
+      {/* Login Link */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
         <Text>Already have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -92,13 +116,16 @@ const RegisterScreen = ({ navigation, route }: any) => {
         </TouchableOpacity>
       </View>
 
+      {/* Terms Checkbox */}
       <View style={styles.left}>
-          <CheckBox
-            value={isSelectedTerms}
-            onValueChange={setSelectionTerms}
-          />
-          <Text style={styles.label}>By logging in, you agree with our Terms & Conditions, Privacy & Cookie Policy.</Text>
-        </View>
+        <CheckBox
+          value={isSelectedTerms}
+          onValueChange={setSelectionTerms}
+        />
+        <Text style={styles.label}>
+          By logging in, you agree with our Terms & Conditions, Privacy & Cookie Policy.
+        </Text>
+      </View>
     </View>
   );
 };

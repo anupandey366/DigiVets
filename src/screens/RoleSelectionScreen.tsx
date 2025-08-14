@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image, BackHandler } from 'react-native';
 
 const RoleSelectionScreen = ({ navigation }: any) => {
   const handleRoleSelect = (role: string) => {
@@ -12,7 +12,7 @@ const RoleSelectionScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity style={styles.backButton} onPress={() => {BackHandler.exitApp();}}>
         <Image source={require('../assests/back.png')} style={styles.backIcon} />
       </TouchableOpacity>
 

@@ -1,23 +1,64 @@
 import React, { useState } from 'react';
-import { View, Text,  TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text,  TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
 import { CountryCode } from 'react-native-country-picker-modal';
 import Icon from 'react-native-vector-icons/Feather';
 import CheckBox from '@react-native-community/checkbox';
 
 const LoginScreen = ({ navigation, route }: any) => {
-    const handleRoleSelect = (role: string) => {
-    navigation.navigate('', { role }); 
-  };
   const [countryCode, setCountryCode] = useState<CountryCode>("IN");
   const [callingCode, setCallingCode] = useState('91');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
-  const [isSelected, setSelection] = useState(false);
-  const [isSelectedTerms, setSelectionTerms] = useState(false);
-  
+  const [isSelected, setSelection] = useState(false); // OTP checkbox
+  const [isSelectedTerms, setSelectionTerms] = useState(false); // Terms checkbox
+
   const { role } = route.params || {};
+
+  const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/; 
+  // At least 6 characters, 1 letter, 1 number
+
+  const handleLogin = () => {
+    // Phone number validation
+    if (!mobile.trim()) {
+      Alert.alert('Error', 'Please enter your mobile number');
+      return;
+    }
+    if (mobile.length < 10 || mobile.length > 15) {
+      Alert.alert('Error', 'Mobile number must be between 10 and 15 digits');
+      return;
+    }
+
+    // Password validation (only if OTP is NOT selected)
+    if (!isSelected) {
+      if (!password.trim()) {
+        Alert.alert('Error', 'Please enter your password');
+        return;
+      }
+      if (!passwordRegex.test(password)) {
+        Alert.alert(
+          'Error',
+          'Password must be at least 6 characters long and include at least one letter and one number'
+        );
+        return;
+      }
+    }
+
+    // Terms checkbox validation
+    if (!isSelectedTerms) {
+      Alert.alert('Error', 'You must agree to the Terms & Conditions');
+      return;
+    }
+
+    // If all validations pass
+    if (isSelected) {
+      Alert.alert('OTP Sent', `Sending OTP to +${callingCode} ${mobile}`);
+      navigation.navigate('Otp', { role, from: 'LoginToOtp' });
+    } else {
+      navigation.navigate('DoctorDashboard', { role });
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -27,9 +68,7 @@ const LoginScreen = ({ navigation, route }: any) => {
 
       <Image source={require('../assests/logo.png')} style={styles.logo} />
 
-      {/* <Text style={styles.title}>Login as Pet Parent</Text> */}
       <Text style={styles.title}>{role ? `Login as ${role}` : 'Login'}</Text>
-
       <Text style={styles.title}>Access doctors and manage your pet's health online.</Text>
 
       {/* Mobile Number */}
@@ -48,14 +87,14 @@ const LoginScreen = ({ navigation, route }: any) => {
         <TextInput
           style={styles.input}
           placeholder="Enter mobile number"
-          keyboardType="phone-pad"
+          keyboardType="phone-pad"          
+          maxLength={15} 
           value={mobile}
           onChangeText={setMobile}
         />
       </View>
 
-      {/* Password */}
-      {/* Show password fields only when checkbox is NOT selected */}
+      {/* Password (hide if OTP checkbox is selected) */}
       {!isSelected && (
         <>
           <Text style={styles.label}>Password</Text>
@@ -64,6 +103,7 @@ const LoginScreen = ({ navigation, route }: any) => {
               style={styles.input}
               placeholder="Enter Password"
               secureTextEntry={!passwordVisible}
+              maxLength={20} 
               value={password}
               onChangeText={setPassword}
             />
@@ -71,35 +111,31 @@ const LoginScreen = ({ navigation, route }: any) => {
               onPress={() => setPasswordVisible(!passwordVisible)}
               style={styles.iconButton}
             >
-              <Icon
-                name={passwordVisible ? 'eye-off' : 'eye'}
-                size={20}
-                color="#000"
-              />
+              <Icon name={passwordVisible ? 'eye-off' : 'eye'} size={20} color="#000" />
             </TouchableOpacity>
           </View>
         </>
       )}
+
+      {/* OTP Checkbox + Forgot Password */}
       <View style={styles.row}>
-        {/* Left: Checkbox with label */}
         <View style={styles.left}>
-          <CheckBox
-            value={isSelected}
-            onValueChange={setSelection}
-          />
+          <CheckBox value={isSelected} onValueChange={setSelection} />
           <Text style={styles.label}>Login using OTP</Text>
         </View>
-
-        {/* Right: Forgot Password link */}
-        <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword', { role })}>
-          <Text style={styles.link}>Forgot Password?</Text>
-        </TouchableOpacity>
+        {!isSelected && (
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword', { role })}>
+            <Text style={styles.link}>Forgot Password?</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      
-      <TouchableOpacity style={styles.button} onPress={() => handleRoleSelect('Doctor')}>
-        <Text style={styles.buttonText}>Login</Text>
+
+      {/* Login / Get OTP Button */}
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>{isSelected ? 'Get OTP' : 'Login'}</Text>
       </TouchableOpacity>
 
+      {/* Register Link */}
       <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 10 }}>
         <Text>Don’t have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Register', { role })}>
@@ -107,13 +143,13 @@ const LoginScreen = ({ navigation, route }: any) => {
         </TouchableOpacity>
       </View>
 
+      {/* Terms Checkbox */}
       <View style={styles.left}>
-          <CheckBox
-            value={isSelectedTerms}
-            onValueChange={setSelectionTerms}
-          />
-          <Text style={styles.label}>By logging in, you agree with our Terms & Conditions, Privacy & Cookie Policy.</Text>
-        </View>
+        <CheckBox value={isSelectedTerms} onValueChange={setSelectionTerms} />
+        <Text style={styles.label}>
+          By logging in, you agree with our Terms & Conditions, Privacy & Cookie Policy.
+        </Text>
+      </View>
     </View>
   );
 };

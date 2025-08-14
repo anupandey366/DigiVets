@@ -1,23 +1,41 @@
 import React, { useState } from 'react';
-import { View, Text,  TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text,  TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
 import { CountryCode } from 'react-native-country-picker-modal';
-import Icon from 'react-native-vector-icons/Feather';
-import CheckBox from '@react-native-community/checkbox';
 
 const ForgotPasswordScreen = ({ navigation, route }: any) => {
-    const handleRoleSelect = (role: string) => {
-    navigation.navigate('', { role }); 
-  };
   const [countryCode, setCountryCode] = useState<CountryCode>("IN");
   const [callingCode, setCallingCode] = useState('91');
-  const [passwordVisible, setPasswordVisible] = useState(false);
   const [mobile, setMobile] = useState('');
-  const [password, setPassword] = useState('');
-  const [isSelected, setSelection] = useState(false);
-  const [isSelectedTerms, setSelectionTerms] = useState(false);
-  
+
   const { role } = route.params || {};
+
+  const validateAndSendOTP = () => {
+    const trimmedMobile = mobile.trim();
+
+    // Empty check
+    if (!trimmedMobile) {
+      Alert.alert("Error", "Please enter your mobile number.");
+      return;
+    }
+
+    // Length check
+    if (trimmedMobile.length < 10 || trimmedMobile.length > 15) {
+      Alert.alert("Error", "Mobile number must be between 10 and 15 digits.");
+      return;
+    }
+
+    // Numeric check
+    if (!/^\d+$/.test(trimmedMobile)) {
+      Alert.alert("Error", "Mobile number must contain only digits.");
+      return;
+    }
+
+    // If all good
+    console.log(`Send OTP to: +${callingCode}${trimmedMobile}`);
+    Alert.alert("Success", `OTP sent to +${callingCode}${trimmedMobile}`);
+    navigation.navigate('Otp', { role, from: 'ForgotToOtp'  });
+  };
 
   return (
     <View style={styles.container}>
@@ -28,9 +46,9 @@ const ForgotPasswordScreen = ({ navigation, route }: any) => {
       <Image source={require('../assests/logo.png')} style={styles.logo} />
 
       <Text style={styles.title}>Forgot Password?</Text>
-      {/* <Text style={styles.title}>{role ? `Register as ${role}` : 'Register'}</Text> */}
-
-      <Text style={styles.title}>Enter your registered mobile number and we’ll send you an OTP to reset your password.</Text>
+      <Text style={styles.title}>
+        Enter your registered mobile number and we’ll send you an OTP to reset your password.
+      </Text>
 
       {/* Mobile Number */}
       <Text style={styles.label}>Mobile Number</Text>
@@ -49,22 +67,15 @@ const ForgotPasswordScreen = ({ navigation, route }: any) => {
           style={styles.input}
           placeholder="Enter mobile number"
           keyboardType="phone-pad"
+          maxLength={15} 
           value={mobile}
           onChangeText={setMobile}
         />
       </View>
       
-      <TouchableOpacity style={styles.button} onPress={() => handleRoleSelect('Doctor')}>
+      <TouchableOpacity style={styles.button} onPress={validateAndSendOTP}>
         <Text style={styles.buttonText}>Send OTP</Text>
       </TouchableOpacity>
-
-      <View style={styles.left}>
-          <CheckBox
-            value={isSelectedTerms}
-            onValueChange={setSelectionTerms}
-          />
-          <Text style={styles.label}>By logging in, you agree with our Terms & Conditions, Privacy & Cookie Policy.</Text>
-        </View>
     </View>
   );
 };
